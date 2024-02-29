@@ -13,7 +13,7 @@ definePageMeta({
           <div class="text-base leading-7 text-gray-700">
             <img
               class="object-cover mb-5 aspect-video rounded-xl bg-gray-50"
-              src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&w=1310&h=873&q=80&facepad=3"
+              :src="post.banner"
               alt=""
             />
             <div class="flex items-center justify-between">
@@ -29,10 +29,15 @@ definePageMeta({
               </div>
               <div class="flex items-center gap-2">
                 <i
+                  @click="likePost()"
                   v-if="post.isLiked"
                   class="text-2xl text-red-400 fa-solid fa-heart"
                 ></i>
-                <i v-else class="text-2xl fa-regular fa-heart"></i>
+                <i
+                  @click="likePost()"
+                  v-else
+                  class="text-2xl fa-regular fa-heart"
+                ></i>
                 {{ post.totalLikes }} Likes
               </div>
             </div>
@@ -234,6 +239,21 @@ export default {
             alert(
               "Comment posted successfully. Admin will review and approve it."
             );
+          }
+        });
+
+      this.isLoading = false;
+    },
+    async likePost() {
+      this.isLoading = true;
+
+      await this.$api
+        .post(`/platform/posts/${this.postId}/like`)
+        .then((res) => {
+          if (res.success) {
+            this.getPost();
+          } else {
+            alert(res.message);
           }
         });
 
